@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane fx:id="contentPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Maincontroller">
+   <children>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="663.0" prefWidth="626.0">
+         <children>
+            <Text layoutX="71.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="AJOUTER PFE" textAlignment="CENTER" wrappingWidth="484.3869934082031">
+               <font>
+                  <Font name="Berlin Sans FB Demi Bold" size="68.0" />
+               </font>
+            </Text>
+            <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#switchToAjoutPFE0" text="&lt;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <GridPane layoutX="18.0" layoutY="192.0" prefHeight="443.0" prefWidth="589.0">
+              <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NCIN Etudiant1:" wrappingWidth="138.47937774658203">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Text>
+                              <TextArea disable="true" opacity="0.0" prefHeight="54.0" prefWidth="139.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NCIN Etudiant2:" wrappingWidth="138.47937774658203">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </VBox>
+                        <TextArea disable="true" opacity="0.0" prefHeight="149.0" prefWidth="0.0" />
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ComboBox fx:id="E11" onMouseClicked="#initializeE2" prefHeight="50.0" prefWidth="100.0" />
+                              <TextArea disable="true" opacity="0.0" prefHeight="3.0" prefWidth="100.0" />
+                              <ComboBox fx:id="E12" layoutX="10.0" layoutY="10.0" onMouseClicked="#initializeE12" prefHeight="52.0" prefWidth="100.0">
+                                 <padding>
+                                    <Insets bottom="-1.0" />
+                                 </padding>
+                              </ComboBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NCIN Encadreur:" wrappingWidth="140.87940216064453">
+                           <font>
+                              <Font size="19.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="8.0" top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                        <TextArea disable="true" opacity="0.0" prefHeight="149.0" prefWidth="0.0" />
+                        <ComboBox fx:id="EN1" onMouseClicked="#initializeEN2" prefHeight="48.0" prefWidth="160.0">
+                           <HBox.margin>
+                              <Insets top="50.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Date :" wrappingWidth="131.27936553955078">
+                           <font>
+                              <Font size="19.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                        <TextArea disable="true" opacity="0.0" prefHeight="149.0" prefWidth="0.0" />
+                        <DatePicker fx:id="D1" prefHeight="46.0" prefWidth="130.0">
+                           <HBox.margin>
+                              <Insets right="5.0" top="50.0" />
+                           </HBox.margin>
+                        </DatePicker>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Heure:" wrappingWidth="142.47937774658203">
+                           <font>
+                              <Font size="19.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="8.0" top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                        <TextArea disable="true" opacity="0.0" prefHeight="149.0" prefWidth="0.0" />
+                        <ComboBox fx:id="H1" onMouseClicked="#initialize2" prefHeight="48.0" prefWidth="122.0">
+                           <HBox.margin>
+                              <Insets top="50.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Local :" wrappingWidth="131.27936553955078">
+                           <font>
+                              <Font size="19.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="60.0" />
+                           </HBox.margin>
+                        </Text>
+                        <TextArea disable="true" opacity="0.0" prefHeight="149.0" prefWidth="0.0" />
+                        <ComboBox fx:id="L1" onMouseClicked="#initialize2" prefHeight="48.0" prefWidth="124.0">
+                           <HBox.margin>
+                              <Insets top="50.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                     </children>
+                  </HBox>
+                  <Button mnemonicParsing="false" onAction="#ajouterPfe2" prefHeight="62.0" prefWidth="170.0" text="Vérifier et Ajouter Jury" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+            <Text layoutX="507.0" layoutY="653.0" strokeType="OUTSIDE" strokeWidth="0.0" text="\@ZiadiSafouene CPI2" underline="true" />
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

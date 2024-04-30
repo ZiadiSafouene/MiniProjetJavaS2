@@ -5,7 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Function;
-
+import javafx.animation.Animation;
+import javafx.animation.Transition;
+import javafx.util.Duration;
 import javafx.beans.binding.IntegerExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;

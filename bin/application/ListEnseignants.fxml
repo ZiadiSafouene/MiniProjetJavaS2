@@ -77,10 +77,11 @@
                   <TableView fx:id="tableView2" prefHeight="426.0" prefWidth="626.0">
                     <columns>
                       <TableColumn fx:id="nom2" prefWidth="107.99997103214264" text="Nom" />
-                      <TableColumn fx:id="prenom2" prefWidth="133.59990692138672" text="Prénom" />
+                      <TableColumn fx:id="prenom2" prefWidth="120.79998016357422" text="Prénom" />
                         <TableColumn fx:id="cin2" prefWidth="124.79998779296875" text="CIN" />
-                        <TableColumn fx:id="matiere" minWidth="0.0" prefWidth="130.4000244140625" text="Matière" />
-                        <TableColumn fx:id="departement" prefWidth="117.59994506835938" text="Département" />
+                        <TableColumn fx:id="matiere" minWidth="0.0" prefWidth="107.199951171875" text="Matière" />
+                        <TableColumn fx:id="departement" prefWidth="106.40005493164062" text="Département" />
+                        <TableColumn fx:id="editColumn1" prefWidth="59.20001220703125" text="Modif" />
                     </columns>
                   </TableView>
                </children>
@@ -95,6 +96,11 @@
                   <Font name="Berlin Sans FB Demi Bold" size="34.0" />
                </font>
             </Text>
+            <Button layoutX="486.0" layoutY="623.0" mnemonicParsing="false" onAction="#supprimerTt" prefHeight="34.0" prefWidth="119.0" text="Supprimer Tout" textAlignment="CENTER">
+               <font>
+                  <Font name="Dubai Bold" size="13.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

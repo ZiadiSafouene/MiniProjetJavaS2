@@ -76,12 +76,13 @@
                         </VBox>
                      </children>
                   </HBox>
-                  <TableView fx:id="tableView" prefHeight="470.0" prefWidth="626.0">
+                  <TableView fx:id="tableView" prefHeight="455.0" prefWidth="626.0">
                     <columns>
                       <TableColumn fx:id="nom" prefWidth="137.60004270076752" text="Nom" />
                       <TableColumn fx:id="prenom" prefWidth="155.2000732421875" text="Prénom" />
                       <TableColumn fx:id="cin" prefWidth="152.7999267578125" text="CIN" />
-                      <TableColumn fx:id="branche" minWidth="0.0" prefWidth="165.59994506835938" text="Branche" />
+                      <TableColumn fx:id="branche" minWidth="0.0" prefWidth="112.80007934570312" text="Branche" />
+                        <TableColumn fx:id="editColumn3" prefWidth="64.79996337890623" text="Modif" />
                     </columns>
                   </TableView>
                   <TextArea prefHeight="1.0" prefWidth="626.0" visible="false" />
@@ -97,6 +98,11 @@
                   <Font name="Berlin Sans FB Demi Bold" size="34.0" />
                </font>
             </Text>
+            <Button layoutX="502.0" layoutY="622.0" mnemonicParsing="false" onAction="#supprimerTt" prefHeight="34.0" prefWidth="112.0" text="Supprimer Tout">
+               <font>
+                  <Font name="Dubai Bold" size="13.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

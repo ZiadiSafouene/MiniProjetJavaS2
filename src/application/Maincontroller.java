@@ -22,7 +22,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
@@ -30,6 +32,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -105,6 +108,10 @@ public class Maincontroller implements Initializable{
 	javafx.collections.ObservableList<ModelPFE> data3 = FXCollections.observableArrayList();
 	@FXML
 	TableColumn<ModelPFE, Void> editColumn = new TableColumn<>("Edit");
+	@FXML
+	TableColumn<ModelEnseignant, Void> editColumn1 = new TableColumn<>("Edit");
+	@FXML
+	TableColumn<ModelEtudiant, Void> editColumn3 = new TableColumn<>("Edit");
 
 	
 	
@@ -156,13 +163,13 @@ public class Maincontroller implements Initializable{
     );
 	
 	private ObservableList<String> Heure = FXCollections.observableArrayList(
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14"
+            "8:00 AM",
+            "9:00 AM",
+            "10:00 AM",
+            "11:00 AM",
+            "12:00 PM",
+            "13:00 PM",
+            "14:00 PM"
     );
 	private ObservableList<String> Etat = FXCollections.observableArrayList(
             "Pas encore passée",
@@ -199,13 +206,6 @@ public class Maincontroller implements Initializable{
     	System.out.println(Etudiants);
     	E1.setItems(Etudiants);
     	
-    }
-    
-    private <S,T> TableColumn<S,T> column(String title, Function<S, ObservableValue<T>> property, double width) {
-        TableColumn<S,T> col = new TableColumn<>(title);
-        col.setCellValueFactory(cellData -> property.apply(cellData.getValue()));
-        col.setPrefWidth(width);
-        return col ;
     }
     
     //-----SELECT JURY--------
@@ -299,51 +299,86 @@ public class Maincontroller implements Initializable{
     	
     }
     public static String idjur;
-    
+    boolean t3ada=true;
     public void validerJury() {
-    	
+    	t3ada =true;
     	ResultSet resultSet;
 	    String pr = P.getValue();
 	    String ex = EX.getValue();
 	    String r = R.getValue();
 	    String en = EN.getValue();
 
-	    String sql = "INSERT INTO jury VALUES(?, ?, ?, ?, null, ?)";
+	    String sql = "INSERT INTO jury(idP,idEX,idR,idEN,ListV) VALUES(?, ?, ?, ?, null)";
         try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
             pstmt.setString(1,pr);
             pstmt.setString(2, ex);
             pstmt.setString(3, r);
             pstmt.setString(4, en);
-            pstmt.setString(5, idjur);
+            
           
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //switchSelectJury();
+        switchListPFE();
     }
     private int IDpfe=0;
 	
 	public void ajouterPfe1() {
 		ResultSet resultSet;
+		ResultSet rs;
 	    String etud1 = E1.getValue();
 	    String dat = D.getValue().toString();
 	    String loca = L.getValue();
 	    String heur = H.getValue();
-
-	    String sql = "INSERT INTO pfe VALUES(?, ?, null, ?, ?, ?,0, null )";
-        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
-            pstmt.setString(1, String.valueOf(++IDpfe));
-            pstmt.setString(2, etud1);
-            pstmt.setString(3, dat);
-            pstmt.setString(4, heur);
-            pstmt.setString(5, loca);
+	    idjur=etud1;
+	    String sql1 = "SELECT * FROM pfe WHERE date= ? AND heure= ? AND local = ?";
+        
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql1)) {
+            pstmt.setString(1, dat);
+            pstmt.setString(2, heur);
+            pstmt.setString(3, loca);
           
-           // pstmt.executeUpdate();
+           rs=pstmt.executeQuery();
+           Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+           confirmationAlert.setTitle("Error");
+           confirmationAlert.setHeaderText("N'est pas possible d'ajouter cette PFE");
+           
+           ButtonType buttonTypeYes = new ButtonType("Retour");
+           confirmationAlert.getButtonTypes().setAll(buttonTypeYes);
+           if (rs.next()) { confirmationAlert.showAndWait().ifPresent(response -> {
+               if (response == buttonTypeYes) {
+                   System.out.println("User clicked OK");
+                   switchToAjoutPFE0();
+                   t3ada=false;
+                   } 
+           });
+           
+           
+           }
+           
         } catch (Exception e) {
             e.printStackTrace();
         }
-        switchSelectJury();
+        
+	    String sql = "INSERT INTO pfe(etudiant1,etudiant2,date,heure,local,etat,JuryId) VALUES(?,null, ?, ?, ?,0,null )";
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            pstmt.setString(1, etud1);
+            pstmt.setString(2, dat);
+            pstmt.setString(3, heur);
+            pstmt.setString(4, loca);
+            
+          
+           pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        
+        
+       if (t3ada) {
+        	switchSelectJury();
+        }
 	    
 		
 		
@@ -371,13 +406,13 @@ public class Maincontroller implements Initializable{
     );
 	
 	private ObservableList<String> Heure1 = FXCollections.observableArrayList(
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14"
+			"8:00 AM",
+            "9:00 AM",
+            "10:00 AM",
+            "11:00 AM",
+            "12:00 PM",
+            "13:00 PM",
+            "14:00 PM"
     );
 	private ObservableList<String> Etudiants1 = FXCollections.observableArrayList();
 	private ObservableList<String> Etudiants2 = FXCollections.observableArrayList();
@@ -825,7 +860,7 @@ public class Maincontroller implements Initializable{
 			prenom.setCellValueFactory(cellData -> cellData.getValue().prenomProperty());
 			cin.setCellValueFactory(cellData -> cellData.getValue().cinProperty());
 			branche.setCellValueFactory(cellData -> cellData.getValue().brancheProperty());
-			
+			editColumn3.setCellFactory(param -> new TableCellWithButtonEt());
 			
 			String nom = n.getText();
 		    String prenom = p.getText();
@@ -871,7 +906,7 @@ public class Maincontroller implements Initializable{
 			cin2.setCellValueFactory(cellData -> cellData.getValue().cinProperty());
 			matiere.setCellValueFactory(cellData -> cellData.getValue().matiereProperty());
 			departement.setCellValueFactory(cellData -> cellData.getValue().departementProperty());
-			
+			editColumn1.setCellFactory(param -> new TableCellWithButtonEn());
 			try {
 				resultSet = statement.executeQuery("SELECT * FROM enseignant");
 				
@@ -911,12 +946,21 @@ public class Maincontroller implements Initializable{
 				 while (resultSet.next()) {
 					 String etudiantCIN = resultSet.getString("etudiant1");
 					 String etudiantCIN2 = resultSet.getString("etudiant2");
+					 
 				     ResultSet rsEtud1 = statement2.executeQuery("SELECT * FROM etudiant WHERE cin = '" + etudiantCIN + "'");
 				     
 				     ResultSet rsEtud2 = statement3.executeQuery("SELECT * FROM etudiant WHERE cin = '" + etudiantCIN2 + "'");
-					 if(rsEtud1.next() && rsEtud2.next()) {						 
-						 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), rsEtud1.getString("nom")+" "+rsEtud1.getString("prenom"), rsEtud2.getString("nom")+" "+rsEtud2.getString("prenom"), resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
+				     if (resultSet.getString("etudiant2")==null) {
+				    	 if(rsEtud1.next()) {						 
+							 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), rsEtud1.getString("nom")+" "+rsEtud1.getString("prenom"), " ", resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
+						 }
 					 }
+				     else {
+				    	 if(rsEtud1.next() && rsEtud2.next() ) {						 
+							 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), rsEtud1.getString("nom")+" "+rsEtud1.getString("prenom"), rsEtud2.getString("nom")+" "+rsEtud2.getString("prenom"), resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
+						 }
+				     }
+					 
                  }
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -1045,6 +1089,8 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
 	public static String ide;
 	public static String iden;
 	
+	@FXML
+	Tooltip tooltip = new Tooltip();
     public class TableCellWithButton extends TableCell<ModelPFE, Void> {
         private Button editButton = new Button("Edit");
         public static String idPourSearchBd ;
@@ -1053,13 +1099,18 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
         public static String et ;
         public static String he ;*/
         public static String daa ;
+        boolean tooltipvisible;
         public TableCellWithButton() {
             editButton.setOnAction(event -> {
+            	if (tableView3!= null) {
                 ModelPFE item =getTableView().getItems().get(getIndex());
-                openEditPage(item);
+                openEditPageP(item);}
+            	
+            	
                 
                
             });
+           if (tableView3!=null) {
            tableView3.setOnKeyPressed(event -> {
         	   if(event.getCode()==KeyCode.BACK_SPACE && !tableView3.getSelectionModel().isEmpty()) {
         		   ModelPFE selectedPfe = tableView3.getSelectionModel().getSelectedItem();
@@ -1087,7 +1138,48 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
                        
                    }
                }
+           });}
+           tooltipvisible=false;
+           tableView3.setOnKeyPressed(event -> {
+        	   if(event.getCode()==KeyCode.SPACE && !tableView3.getSelectionModel().isEmpty()) {
+        	   if(!tooltipvisible) {
+        	   ResultSet resultset;
+        	   String str="";
+               ModelPFE selectedPFE = tableView3.getSelectionModel().getSelectedItem();
+               if (selectedPFE != null) {
+            	   try {
+            		   tooltip.setShowDelay(javafx.util.Duration.millis(500));
+                       Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
+                       PreparedStatement statement = connection.prepareStatement("select * FROM jury WHERE idJ = ?");
+                       statement.setString(1, selectedPFE.getIdjury().getValue());
+                       resultset=statement.executeQuery();
+                       if(resultset.next()) {str=resultset.getString("ListV");}
+                       
+                       connection.close();
+                   } catch (SQLException e) {
+                       e.printStackTrace();
+                   }}
+               		double rowWidth = tableView3.getWidth();
+               		double rowHeight = tableView3.getHeight();
+               		double rowX = rowWidth ; 
+               		double rowY = rowHeight / 2; 
+
+               // Convert local coordinates to scene coordinates
+               		double sceneX = tableView3.localToScene(rowX, rowY).getX();
+               		double sceneY = tableView3.localToScene(rowX, rowY).getY();
+                   tooltip.setText(str);
+                   tooltip.show(tableView3,sceneX,sceneY);
+                   
+               }}
+        	   else {
+        		   tooltip.hide();
+        		   tooltipvisible=false;
+         }
+        	  
+                
            });
+           
+           
         }
         
        
@@ -1101,7 +1193,7 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
             }
         }
 
-        private void openEditPage(ModelPFE item) {
+        private void openEditPageP(ModelPFE item) {
     
         	idPourSearchBd=item.getId().getValue();
         	System.out.println(idPourSearchBd);
@@ -1110,12 +1202,146 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
         	et=item.getEtat().toString();
         	he=item.getHeure().toString();*/
         	daa=item.getDate().getValue();
-            switchEditPFE();
+            switchEditPFE();    
+        }
+        private void openEditPageEN(ModelEnseignant item) {
             
+        	idPourSearchBd=item.getCin().getValue();
+        	System.out.println(idPourSearchBd);
+        	/*lo=item.getLocal().toString();
+        	daa=item.getDate().toString();
+        	et=item.getEtat().toString();
+        	he=item.getHeure().toString();*/
+            switchEditPFE();    
+        }
+        private void openEditPageET(ModelEtudiant item) {
             
+        	idPourSearchBd=item.getCin().getValue();
+        	System.out.println(idPourSearchBd);
+        	/*lo=item.getLocal().toString();
+        	daa=item.getDate().toString();
+        	et=item.getEtat().toString();
+        	he=item.getHeure().toString();*/
+            switchEditPFE();    
+        }
+    }
+    public class TableCellWithButtonEn extends TableCell<ModelEnseignant, Void> {
+        private Button editButton = new Button("Edit");
+        public static String idPourSearchBd ;
+        /*public static String lo ;
+        public static String daa ;
+        public static String et ;
+        public static String he ;*/
+        public static String daa ;
+        public TableCellWithButtonEn() {
+            editButton.setOnAction(event -> {
+            	if (tableView2!= null) {
+                ModelEnseignant item =getTableView().getItems().get(getIndex());
+                openEditPageEN(item);}
+          });
+          
+           
+           if (tableView2!=null) {
+               tableView2.setOnKeyPressed(event -> {
+            	   if(event.getCode()==KeyCode.BACK_SPACE && !tableView2.getSelectionModel().isEmpty()) {
+            		   ModelEnseignant selectedEns = tableView2.getSelectionModel().getSelectedItem();
+                       tableView2.getItems().remove(selectedEns);
+                       try {
+                           Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
+                           PreparedStatement statement = connection.prepareStatement("DELETE FROM enseignant WHERE cin = ?");
+                           statement.setString(1, selectedEns.getCin().getValue());
+                           statement.executeUpdate();
+                           connection.close();
+                       } catch (SQLException e) {
+                           e.printStackTrace();
+                       }
+            	   }
+               });
+               }
+        }
+        
+       
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(editButton);
+            }
+        }
+
+        private void openEditPageEN(ModelEnseignant item) {
+            
+        	idPourSearchBd=item.getCin().getValue();
+        	System.out.println(idPourSearchBd);
+        	/*lo=item.getLocal().toString();
+        	daa=item.getDate().toString();
+        	et=item.getEtat().toString();
+        	he=item.getHeure().toString();*/
+            switchEditEnseignant();    
+        }
+    }
+    public class TableCellWithButtonEt extends TableCell<ModelEtudiant, Void> {
+        private Button editButton = new Button("Edit");
+        public static String idPourSearchBd ;
+        /*public static String lo ;
+        public static String daa ;
+        public static String et ;
+        public static String he ;*/
+        public static String daa ;
+        public TableCellWithButtonEt() {
+            editButton.setOnAction(event -> {
+            	if (tableView!= null) {
+                ModelEtudiant item =getTableView().getItems().get(getIndex());
+                openEditPageEt(item);}
+          });
+          
+           
+           if (tableView!=null) {
+               tableView.setOnKeyPressed(event -> {
+            	   if(event.getCode()==KeyCode.BACK_SPACE && !tableView.getSelectionModel().isEmpty()) {
+            		   ModelEtudiant selectedEt = tableView.getSelectionModel().getSelectedItem();
+                       tableView.getItems().remove(selectedEt);
+                       try {
+                           Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
+                           PreparedStatement statement = connection.prepareStatement("DELETE FROM etudiant WHERE cin = ?");
+                           statement.setString(1, selectedEt.getCin().getValue());
+                           statement.executeUpdate();
+                           connection.close();
+                       } catch (SQLException e) {
+                           e.printStackTrace();
+                       }
+            	   }
+               });
+               }
+        }
+        
+       
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(editButton);
+            }
+        }
+
+        private void openEditPageEt(ModelEtudiant item) {
+            
+        	idPourSearchBd=item.getCin().getValue();
+        	System.out.println(idPourSearchBd);
+        	/*lo=item.getLocal().toString();
+        	daa=item.getDate().toString();
+        	et=item.getEtat().toString();
+        	he=item.getHeure().toString();*/
+            switchEditEtudiant();    
         }
     }
     javafx.collections.ObservableList<ModelPFE> all = FXCollections.observableArrayList();
+    javafx.collections.ObservableList<ModelEtudiant> all1 = FXCollections.observableArrayList();
+    javafx.collections.ObservableList<ModelEnseignant> all2 = FXCollections.observableArrayList();
     public void supprimerTt() {
     	/*try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
@@ -1126,14 +1352,32 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
         } catch (SQLException e) {
             e.printStackTrace();
         }*/
+    	if (tableView3!=null) {
     	all = tableView3.getItems();
         
         
         for(ModelPFE pfe : all) {
         	supprimer(pfe);
         	}
+    	}
+    	if (tableView!=null) {
+        	all1 = tableView.getItems();
+            
+            
+            for(ModelEtudiant et : all1) {
+            	supprimer1(et);
+            	}
+        	}
+    	if (tableView2!=null) {
+        	all2 = tableView2.getItems();
+            
+            
+            for(ModelEnseignant en : all2) {
+            	supprimer2(en);
+            	}
+        	}
         
-        
+    
     	
     }
     public void supprimer(ModelPFE selectedPfe) {
@@ -1141,14 +1385,46 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
     	try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
             PreparedStatement statement = connection.prepareStatement("DELETE FROM pfe WHERE idPFE = ?");
+            PreparedStatement statement1 = connection.prepareStatement("DELETE FROM jury WHERE idJ = ?");
             statement.setString(1, selectedPfe.getId().getValue());
+            statement1.setString(1, selectedPfe.getIdjury().getValue());
+           
             statement.executeUpdate();
+            statement1.executeUpdate();
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     	switchListPFE();
     }
+    public void supprimer1(ModelEtudiant selectedEt) {
+    	
+    	try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM etudiant WHERE cin = ?");
+            
+            statement.setString(1, selectedEt.getCin().getValue());
+            statement.executeUpdate();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	switchListEtudiants();
+    }
+    public void supprimer2(ModelEnseignant selectedEn) {
+    	
+    	try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM enseignant WHERE cin = ?");
+            statement.setString(1, selectedEn.getCin().getValue());
+            statement.executeUpdate();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	switchListEnseignant();
+    }
+    
     public void ModifJury() {
     	String p=prs.getValue().toString();
     	String ex=exm.getValue();
@@ -1218,12 +1494,33 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
     	
     	
     }
+    @FXML
+    private TextArea v = new TextArea();
+    public void visiteur() {
+    	String r=v.getText();
+    	if (r!=null) {
+    		ResultSet resultSet;
+    	    String sql = "UPDATE jury SET ListV = ? WHERE idJ = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, r);
+            	pstmt.setString(2,idj );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	
+    }
     
     @FXML
     private DatePicker D2 = new DatePicker();
 
-    
     public void ModifPFE() {
+
     	if (D2.getValue()==null) {
     		D2.setValue(LocalDate.parse(TableCellWithButton.daa, DateTimeFormatter.ISO_LOCAL_DATE));
     		
@@ -1294,6 +1591,175 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
                 e.printStackTrace();
             }}
     	switchListPFE();
+    	
+    }
+    @FXML
+    private TextField name = new TextField();
+    @FXML
+    private TextField ci = new TextField();
+    @FXML
+    private TextField mat = new TextField();
+    @FXML
+    private TextField depa = new TextField();
+    @FXML
+    private TextField surn = new TextField();
+    
+    public void ModifEN() {
+
+    	String nom=name.getText();
+    	String prenom=surn.getText();
+    	String cin=ci.getText();
+    	String dep=depa.getText();
+    	String matiere=mat.getText();
+    	
+    	if (!nom.isEmpty()) {
+		ResultSet resultSet;
+	    String sql = "UPDATE enseignant SET nom = ? WHERE cin = ?";
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+        	
+        	pstmt.setString(1, nom);
+        	pstmt.setString(2,TableCellWithButtonEn.idPourSearchBd );
+        	
+           
+          
+          
+           pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}
+    	if (!prenom.isEmpty()) {
+    		System.out.println(prenom +"-------");
+    		ResultSet resultSet;
+    		 String sql = "UPDATE enseignant SET prenom = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, prenom);
+            	pstmt.setString(2,TableCellWithButtonEn.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	if (!matiere.isEmpty()) {
+    		ResultSet resultSet;
+    		 String sql = "UPDATE enseignant SET matiere = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, matiere);
+            	pstmt.setString(2,TableCellWithButtonEn.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	if (!dep.isEmpty()) {
+    		ResultSet resultSet;
+    		 String sql = "UPDATE enseignant SET departement = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, dep);
+            	pstmt.setString(2,TableCellWithButtonEn.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	if (!cin.isEmpty()) {
+    		ResultSet resultSet;
+    		 String sql = "UPDATE enseignant SET cin = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, cin);
+            	pstmt.setString(2,TableCellWithButtonEn.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	switchListEnseignant();
+    	
+    }
+    public void ModifEt() {
+
+    	String nom=name.getText();
+    	String prenom=surn.getText();
+    	String cin=ci.getText();
+    	String matiere=mat.getText();
+    	
+    	if (!nom.isEmpty()) {
+		ResultSet resultSet;
+	    String sql = "UPDATE etudiant SET nom = ? WHERE cin = ?";
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+        	
+        	pstmt.setString(1, nom);
+        	pstmt.setString(2,TableCellWithButtonEt.idPourSearchBd );
+        	
+           
+          
+          
+           pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}
+    	if (!prenom.isEmpty()) {
+    		System.out.println(prenom +"-------");
+    		ResultSet resultSet;
+    		 String sql = "UPDATE etudiant SET prenom = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, prenom);
+            	pstmt.setString(2,TableCellWithButtonEt.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	if (!matiere.isEmpty()) {
+    		ResultSet resultSet;
+    		 String sql = "UPDATE etudiant SET branche = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, matiere);
+            	pstmt.setString(2,TableCellWithButtonEt.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	if (!cin.isEmpty()) {
+    		ResultSet resultSet;
+    		 String sql = "UPDATE etudiant SET cin = ? WHERE cin = ?";
+            try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+            	
+            	pstmt.setString(1, cin);
+            	pstmt.setString(2,TableCellWithButtonEt.idPourSearchBd );
+            	
+               
+              
+              
+               pstmt.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+    	switchListEtudiants();
     	
     }
     
@@ -1382,6 +1848,18 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
         loadPage("SelectJury.fxml");        
     }
 	@FXML
+    private void switchEditEnseignant() {
+        loadPage("EditEnseignant.fxml");        
+    }
+	@FXML
+    private void switchEditEtudiant() {
+        loadPage("EditEtudiant.fxml");        
+    }
+	@FXML
+    private void switchAjoutVisiteur() {
+        loadPage("AjoutVisiteurs.fxml");        
+    }
+	@FXML
     private void switchEditPFE() {
         loadPage("EditPFE.fxml");        
     }
@@ -1459,7 +1937,7 @@ class ModelEtudiant{
         return nom;
     }
     public StringProperty cinProperty() {
-        return cin;
+        return getCin();
     }
     public StringProperty brancheProperty() {
         return branche;
@@ -1471,7 +1949,11 @@ class ModelEtudiant{
 
 	@Override
 	public String toString() {
-		return "ModelEtudiant [cin=" + cin.get() + ", nom=" + nom + ", prenom=" + prenom + ", branche=" + branche + "]";
+		return "ModelEtudiant [cin=" + getCin().get() + ", nom=" + nom + ", prenom=" + prenom + ", branche=" + branche + "]";
+	}
+
+	public SimpleStringProperty getCin() {
+		return cin;
 	}   
 }
 class ModelEnseignant{
@@ -1507,7 +1989,7 @@ class ModelEnseignant{
         return nom;
     }
     public StringProperty cinProperty() {
-        return cin;
+        return getCin();
     }
     public StringProperty matiereProperty() {
         return matiere;
@@ -1522,8 +2004,12 @@ class ModelEnseignant{
 
 	@Override
 	public String toString() {
-		return "ModelEnseignant [cin=" + cin + ", nom=" + nom + ", prenom=" + prenom + ", matiere=" + matiere
+		return "ModelEnseignant [cin=" + getCin() + ", nom=" + nom + ", prenom=" + prenom + ", matiere=" + matiere
 				+ ", departement=" + departement + "]";
+	}
+
+	public SimpleStringProperty getCin() {
+		return cin;
 	}
 	
 }

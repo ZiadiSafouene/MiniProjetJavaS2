@@ -102,7 +102,7 @@
                   <Font name="Berlin Sans FB Demi Bold" size="34.0" />
                </font>
             </Text>
-            <Button layoutX="114.0" layoutY="563.0" mnemonicParsing="false" onAction="#validerJury" prefHeight="62.0" prefWidth="170.0" text="AJOUTER VISITEURS">
+            <Button layoutX="114.0" layoutY="563.0" mnemonicParsing="false" onAction="#switchAjoutVisiteur" prefHeight="62.0" prefWidth="170.0" text="AJOUTER VISITEURS">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

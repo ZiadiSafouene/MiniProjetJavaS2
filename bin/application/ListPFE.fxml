@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -36,6 +37,9 @@
                     </items>
                   </ContextMenu>
                </contextMenu>
+               <tooltip>
+                  <Tooltip fx:id="tooltip" text="Empty Tooltip" />
+               </tooltip>
             </TableView>
             <Button layoutX="2.0" layoutY="4.0" mnemonicParsing="false" onAction="#switchToMain" prefHeight="32.0" prefWidth="51.0" text="&lt;">
                <font>

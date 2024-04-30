@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ContextMenu?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -29,13 +28,9 @@
                   <TableColumn fx:id="etat" prefWidth="81.60000610351562" text="Etat" />
                   <TableColumn fx:id="editColumn" prefWidth="43.2000732421875" text="Modif" />
               </columns>
-               <contextMenu>
-                  <ContextMenu>
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                    </items>
-                  </ContextMenu>
-               </contextMenu>
+               <tooltip>
+                  <Tooltip fx:id="tooltip" text="Empty Tooltip" />
+               </tooltip>
             </TableView>
             <Button layoutX="2.0" layoutY="4.0" mnemonicParsing="false" onAction="#switchToMain" prefHeight="32.0" prefWidth="51.0" text="&lt;">
                <font>

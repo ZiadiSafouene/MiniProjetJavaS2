@@ -307,19 +307,39 @@ public class Maincontroller implements Initializable{
 	    String ex = EX.getValue();
 	    String r = R.getValue();
 	    String en = EN.getValue();
-
+	    int generatedId=0;
 	    String sql = "INSERT INTO jury(idP,idEX,idR,idEN,ListV) VALUES(?, ?, ?, ?, null)";
-        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql,statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1,pr);
             pstmt.setString(2, ex);
             pstmt.setString(3, r);
             pstmt.setString(4, en);
-            
-          
+            System.out.println("heere");
             pstmt.executeUpdate();
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            
+            if (generatedKeys.next()) {
+                generatedId = generatedKeys.getInt(1);
+                System.out.println(generatedId);
+                }
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
+        String sql1 = "UPDATE pfe SET JuryId = ? WHERE idPFE = ?";
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql1)) {
+            pstmt.setString(1,""+generatedId);
+            pstmt.setString(2, ""+idpfeTabdil);
+            System.out.println("heere");
+            
+            pstmt.executeUpdate();
+          
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         switchListPFE();
     }
     private int IDpfe=0;
@@ -475,9 +495,10 @@ public class Maincontroller implements Initializable{
     	EN1.setItems(Enseignants1);
     	
     }
-    
+    boolean t3ada2=true;
+    static int idpfeTabdil; 
 	public void ajouterPfe2() {
-		
+		ResultSet rs;
 		ResultSet resultSet;
 	    String etud1 = E11.getValue();
 	    String dat = D1.getValue().toString();
@@ -485,22 +506,59 @@ public class Maincontroller implements Initializable{
 	    String heur = H1.getValue();
 	    String etud2 = E12.getValue();
 	    idjur=etud1;
-	    String sql = "INSERT INTO pfe VALUES(?, ?, ?, ?, ?, ?,null, ? )";
-        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql)) {
-            pstmt.setString(1, String.valueOf(etud1));
-            pstmt.setString(2, etud1);
-            pstmt.setString(3, etud2);
-            pstmt.setString(4, dat);
-            pstmt.setString(5, heur);
-            pstmt.setString(6, loca);
-            pstmt.setString(7, idjur);
-            
+	    String sql1 = "SELECT * FROM pfe WHERE date= ? AND heure= ? AND local = ?";
+        
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql1)) {
+            pstmt.setString(1, dat);
+            pstmt.setString(2, heur);
+            pstmt.setString(3, loca);
           
-            pstmt.executeUpdate();
+           rs=pstmt.executeQuery();
+           Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+           confirmationAlert.setTitle("Error");
+           confirmationAlert.setHeaderText("N'est pas possible d'ajouter cette PFE");
+           
+           ButtonType buttonTypeYes = new ButtonType("Retour");
+           confirmationAlert.getButtonTypes().setAll(buttonTypeYes);
+           if (rs.next()) { confirmationAlert.showAndWait().ifPresent(response -> {
+               if (response == buttonTypeYes) {
+                   System.out.println("User clicked OK");
+                   switchToAjoutPFE0();
+                   t3ada2=false;
+                   } 
+           });
+           
+           
+           }
+           
         } catch (Exception e) {
             e.printStackTrace();
         }
-        switchSelectJury();
+        
+        String sql = "INSERT INTO pfe(etudiant1,etudiant2,date,heure,local,etat,JuryId) VALUES(?, ?, ?, ?, ?, 0,null)";
+        try (PreparedStatement pstmt = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z").prepareStatement(sql,statement.RETURN_GENERATED_KEYS)) {
+           
+            pstmt.setString(1, etud1);
+            pstmt.setString(2, etud2);
+            pstmt.setString(3, dat);
+            pstmt.setString(4, heur);
+            pstmt.setString(5, loca);
+            
+            pstmt.executeUpdate();
+            
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                System.out.println(generatedId);
+                idpfeTabdil=generatedId;
+            }
+            	
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(t3ada2) {switchSelectJury();}
 	      
 		
 		
@@ -835,9 +893,25 @@ public class Maincontroller implements Initializable{
             }
             
             resultSet = statement.executeQuery();
-			 while (resultSet.next()) {
-				 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), resultSet.getString("etudiant1"), resultSet.getString("etudiant2"), resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
-             }
+            while (resultSet.next()) {
+				 String etudiantCIN = resultSet.getString("etudiant1");
+				 String etudiantCIN2 = resultSet.getString("etudiant2");
+				 
+			     ResultSet rsEtud1 = statement2.executeQuery("SELECT * FROM etudiant WHERE cin = '" + etudiantCIN + "'");
+			     
+			     ResultSet rsEtud2 = statement3.executeQuery("SELECT * FROM etudiant WHERE cin = '" + etudiantCIN2 + "'");
+			     if (resultSet.getString("etudiant2")==null) {
+			    	 if(rsEtud1.next()) {						 
+						 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), rsEtud1.getString("nom")+" "+rsEtud1.getString("prenom"), " ", resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
+					 }
+				 }
+			     else {
+			    	 if(rsEtud1.next() && rsEtud2.next() ) {						 
+						 Boolean state = data3.add(new ModelPFE(resultSet.getString("idPFE"), rsEtud1.getString("nom")+" "+rsEtud1.getString("prenom"), rsEtud2.getString("nom")+" "+rsEtud2.getString("prenom"), resultSet.getString("heure"), resultSet.getString("date"), resultSet.getString("local"), resultSet.getString("juryId"), resultSet.getString("etat")));
+					 }
+			     }
+				 
+            }
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1102,16 +1176,17 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
         boolean tooltipvisible;
         public TableCellWithButton() {
             editButton.setOnAction(event -> {
-            	if (tableView3!= null) {
+            	
                 ModelPFE item =getTableView().getItems().get(getIndex());
-                openEditPageP(item);}
+                openEditPageP(item);
             	
             	
                 
                
             });
-           if (tableView3!=null) {
+           
            tableView3.setOnKeyPressed(event -> {
+        	   
         	   if(event.getCode()==KeyCode.BACK_SPACE && !tableView3.getSelectionModel().isEmpty()) {
         		   ModelPFE selectedPfe = tableView3.getSelectionModel().getSelectedItem();
                    tableView3.getItems().remove(selectedPfe);
@@ -1119,6 +1194,7 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "s.121003.z");
                        PreparedStatement statement = connection.prepareStatement("DELETE FROM pfe WHERE idPFE = ?");
                        statement.setString(1, selectedPfe.getId().getValue());
+                       System.out.println(selectedPfe.getId().getValue());
                        statement.executeUpdate();
                        connection.close();
                    } catch (SQLException e) {
@@ -1138,7 +1214,7 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
                        
                    }
                }
-           });}
+           });
            tooltipvisible=false;
            tableView3.setOnKeyPressed(event -> {
         	   if(event.getCode()==KeyCode.SPACE && !tableView3.getSelectionModel().isEmpty()) {

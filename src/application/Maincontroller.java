@@ -1891,21 +1891,59 @@ else if (location.toString().equals(getClass().getResource("JuryPre.fxml").toStr
 	@FXML 
 	private Text description=new Text();
 	
+	@FXML
+	private AnchorPane menuPane;
+	boolean animationMenuState = true;
+
+	@FXML
+	private Button menuBtn;
+	
+	
 	public void resize(ActionEvent e) {
-		myVbox.setVisible(!myVbox.isVisible());
-		if (myVbox.isVisible()) {
+		final Animation openMenuAnim = new Transition() {
+			{
+				setCycleDuration(Duration.millis(250));
+			}
+		
+			protected void interpolate(double frac) {
+				final int length = 157;
+				final int n = Math.round(length * (float) frac);
+				// text.setText(content.substring(0, n));
+				menuPane.setTranslateX(-157 + n);
+			}
+		
+		};
+		final Animation closeMenuAnim = new Transition() {
+			{
+				setCycleDuration(Duration.millis(250));
+			}
+		
+			protected void interpolate(double frac) {
+				final int length = 157;
+				final int n = Math.round(length * (float) frac);
+				// text.setText(content.substring(0, n));
+				menuPane.setTranslateX(-n);
+			}
+		
+		};
+		// myVbox.setVisible(!myVbox.isVisible());
+		if (animationMenuState) {
+			openMenuAnim.play();
 			title.setLayoutX(150);
 			title.setLayoutY(206);
 			description.setLayoutX(239);
 			description.setLayoutY(372);
+			menuBtn.setText("X");
 		}
 		else {
+			closeMenuAnim.play();
 			title.setLayoutX(88);
 			title.setLayoutY(209);
 			description.setLayoutX(183);
 			description.setLayoutY(409);
-			
+			menuBtn.setText("|||");
 		}
+		animationMenuState = !animationMenuState;
 		
 	}
 	// switch entre les pages 

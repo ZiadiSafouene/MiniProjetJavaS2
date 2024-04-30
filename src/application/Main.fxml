@@ -43,7 +43,7 @@
                   <Font name="Berlin Sans FB Demi Bold" size="68.0" />
                </font>
             </Text>
-            <Text fx:id="description" layoutX="183.0" layoutY="409.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gérer les PFE avec un clic !" wrappingWidth="282.53594970703125">
+            <Text fx:id="description" layoutX="183.0" layoutY="409.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GÃŠrer les PFE avec un clic !" wrappingWidth="282.53594970703125">
                <font>
                   <Font name="Tw Cen MT Italic" size="27.0" />
                </font>
